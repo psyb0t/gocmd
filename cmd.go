@@ -1,7 +1,6 @@
-package gocmd
-
 // Easily execute shell commands
 // Wrapper for os/exec
+package gocmd
 
 import (
 	"bytes"
