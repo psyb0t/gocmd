@@ -13,7 +13,6 @@ import (
 
 // This type contains the command instructions and
 // return values
-
 type CMD struct {
 	cmd *exec.Cmd
 	binPath string
@@ -25,7 +24,6 @@ type CMD struct {
 }
 
 // Returns a new CMD struct
-
 func NewCmd() *CMD {
 	cmd := &CMD{}
 	cmd.params = make(map[string]string)
@@ -36,19 +34,16 @@ func NewCmd() *CMD {
 }
 
 // Set the path of the executable to be run
-
 func (c *CMD) SetBinPath(path string) {
 	c.binPath = path
 }
 
 // Set one parameter for the executable
-
 func (c *CMD) SetParam(param, value string) {
 	c.params[param] = value
 }
 
 // Set multiple parameters for the executable
-
 func (c *CMD) SetParams(params map[string]string) {
 	for k, v := range params {
 		c.SetParam(k, v)
@@ -56,31 +51,26 @@ func (c *CMD) SetParams(params map[string]string) {
 }
 
 // Return the STDOUT string
-
 func (c *CMD) GetStdout() string {
 	return c.stdout.String()
 }
 
 // Return the STDERR string
-
 func (c *CMD) GetStderr() string {
 	return c.stderr.String()
 }
 
 // Return the exit status integer
-
 func (c *CMD) GetExitStatus() int {
 	return c.exitStatus
 }
 
 // Check if the command is running
-
 func (c *CMD) IsRunning() bool {
 	return c.running
 }
 
 // Start the command in a goroutine
-
 func (c *CMD) Start() error {
 	var execCmdArgs []string
 	for k, v := range c.params {
@@ -121,7 +111,6 @@ func (c *CMD) Start() error {
 }
 
 // Start the command and wait for it to finish running
-
 func (c *CMD) Run() (int, string, string, error) {
 	err := c.Start()
 	if err != nil {
@@ -136,7 +125,6 @@ func (c *CMD) Run() (int, string, string, error) {
 }
 
 // Stop the command by sending a SIGINT
-
 func (c *CMD) Stop() error {
 	if c.cmd == nil {
 		return nil
@@ -146,7 +134,6 @@ func (c *CMD) Stop() error {
 }
 
 // Kill the command by sending a SIGKILL
-
 func (c *CMD) Kill() error {
 	if c.cmd == nil {
 		return nil
