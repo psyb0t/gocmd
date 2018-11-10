@@ -1,4 +1,5 @@
 // Easily execute shell commands
+//
 // Wrapper for os/exec
 package gocmd
 
@@ -8,25 +9,26 @@ import (
 	"syscall"
 	"time"
 	"os"
+	"errors"
 )
 
 // This type contains the command instructions and
 // return values
 type CMD struct {
-	cmd *exec.Cmd
-	binPath string
-	params map[string]string
+	cmd        *exec.Cmd
+	binPath    string
+	params     map[string]string
 	exitStatus int
-	stderr bytes.Buffer
-	stdout bytes.Buffer
-	running bool
+	stderr     bytes.Buffer
+	stdout     bytes.Buffer
+	running    bool
 }
 
 // Returns a new CMD struct
 func NewCmd() *CMD {
 	cmd := &CMD{}
 	cmd.params = make(map[string]string)
-	cmd.exitStatus = 0
+	cmd.exitStatus = -1
 	cmd.running = false
 
 	return cmd
@@ -54,9 +56,19 @@ func (c *CMD) GetStdout() string {
 	return c.stdout.String()
 }
 
+// Return the STDOUT bytes
+func (c *CMD) GetStdoutBytes() []byte {
+	return c.stdout.Bytes()
+}
+
 // Return the STDERR string
 func (c *CMD) GetStderr() string {
 	return c.stderr.String()
+}
+
+// Return the STDERR bytes
+func (c *CMD) GetStderrBytes() []byte {
+	return c.stderr.Bytes()
 }
 
 // Return the exit status integer
@@ -71,6 +83,10 @@ func (c *CMD) IsRunning() bool {
 
 // Start the command in a goroutine
 func (c *CMD) Start() error {
+	if c.binPath == "" {
+		return errors.New("binary path not set")
+	}
+
 	var execCmdArgs []string
 	for k, v := range c.params {
 		execCmdArgs = append(execCmdArgs, k, v)
@@ -125,7 +141,7 @@ func (c *CMD) Run() (int, string, string, error) {
 
 // Stop the command by sending a SIGINT
 func (c *CMD) Stop() error {
-	if c.cmd == nil {
+	if c.cmd == nil || c.cmd.Process == nil {
 		return nil
 	}
 
@@ -134,7 +150,7 @@ func (c *CMD) Stop() error {
 
 // Kill the command by sending a SIGKILL
 func (c *CMD) Kill() error {
-	if c.cmd == nil {
+	if c.cmd == nil || c.cmd.Process == nil {
 		return nil
 	}
 
